@@ -1,0 +1,54 @@
+{{- $root := . }}
+{{- range $podIndex := until (.Values.replicaCount | int) }}
+---
+{{- $uid := uuidv4 }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "kube-mid-{{ $podIndex }}-{{ $uid }}"
+  labels:
+    {{- include "mid-server.labels" $root | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "mid-server.selectorLabels" $root | nindent 6 }}
+  template:
+    metadata:
+      {{- with $root.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mid-server.selectorLabels" $root | nindent 8 }}
+    spec:
+      {{- with $root.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mid-server.serviceAccountName" $root }}
+      containers:
+        - name: "kube-mid-{{ $podIndex }}-{{ $uid }}"
+          securityContext:
+            {{- toYaml $root.Values.securityContext | nindent 12 }}
+          image: "{{ $root.Values.image.repository }}:{{ $root.Values.image.tag | default $root.Chart.AppVersion }}"
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          resources:
+            {{- toYaml $root.Values.resources | nindent 12 }}
+          env:
+            - name: "MID_SERVER_NAME"
+              value: "kube-mid-{{ $podIndex }}-{{ $uid }}"
+            {{- toYaml $root.Values.env | nindent 12 }}
+      {{- with $root.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $root.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $root.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

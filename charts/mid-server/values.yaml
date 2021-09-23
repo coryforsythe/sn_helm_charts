@@ -1,0 +1,31 @@
+replicaCount: 2
+
+image:
+  repository: localhost:32000/mid
+  pullPolicy: Always
+  tag: "rome"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+clusterRoleName: "midserverclstrole"
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  name: 'midserversvcacct'
+podAnnotations: {}
+resources: {}
+env: 
+  - name: "MID_INSTANCE_URL"
+    value: ""
+  - name: "MID_INSTANCE_USERNAME"
+    value: ""
+  - name: "MID_INSTANCE_PASSWORD"
+    value: ""
+  - name: "MID_SECRETS_FILE"
+    value: "/etc/secret/mid-secrets.properties"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
