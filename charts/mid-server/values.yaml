@@ -5,14 +5,7 @@ image:
   pullPolicy: Always
   tag: "rome"
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-clusterRoleName: "midserverclstrole"
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  name: 'midserversvcacct'
-podAnnotations: {}
+midServerNamePrefix: 'kube-mid'
 resources: {}
 env: 
   - name: "MID_INSTANCE_URL"
@@ -23,9 +16,3 @@ env:
     value: ""
   - name: "MID_SECRETS_FILE"
     value: "/etc/secret/mid-secrets.properties"
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
